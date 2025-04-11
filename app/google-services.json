@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "159499051136",
+    "project_id": "nkotli",
+    "storage_bucket": "nkotli.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159499051136:android:f2ea8055f00eed9ff70665",
+        "android_client_info": {
+          "package_name": "com.parvatha.nkotli"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJwFa1ktQP5yqUOE83CHl83Kh0VlYtUdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
