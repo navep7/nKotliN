@@ -27,7 +27,7 @@ import com.parvatha.nkotli.databinding.ActivityIndexBinding
 
 class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener {
 
-    private lateinit var buttonX: Button
+    private lateinit var fabX: FloatingActionButton
     private lateinit var editTextSeach: EditText
     private lateinit var fabInfo: FloatingActionButton
     private lateinit var recyclerViewIndex: RecyclerView
@@ -56,9 +56,8 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
     private fun OnClickListeners() {
 
-        buttonX.setOnClickListener(OnClickListener {
+        fabX.setOnClickListener(OnClickListener {
             editTextSeach.setText("")
-            arrayListIndex.clear()
             ReadData()
         })
     }
@@ -66,7 +65,9 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     private fun initSearch() {
         editTextSeach.addTextChangedListener { input ->
             if (input != null) {
-                if (input.contains(" ")) {
+                if (input.length == 0)
+                    ReadData()
+                else if (input.contains(" ")) {
                     makeToast("onTC - " + input)
                     rvAdapter.filter.filter(input)
                 }
@@ -83,7 +84,7 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     }
 
     private fun findViewByIds() {
-        buttonX = findViewById(R.id.btn_x)
+        fabX = findViewById(R.id.fab_x)
         recyclerViewIndex = findViewById(R.id.rv_index)
         fabInfo = findViewById(R.id.fab_info)
         editTextSeach = findViewById(R.id.edtx_search)
@@ -92,6 +93,8 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
     @SuppressLint("NotifyDataSetChanged")
     private fun ReadData() {
+
+        arrayListIndex.clear()
 
         db.collection("questions")
             .get()

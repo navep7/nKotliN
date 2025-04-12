@@ -25,13 +25,14 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
 
+    private lateinit var txToolBar: TextView
     private lateinit var textToSpeech: TextToSpeech
     private var index: Int = 0
     private var qCount: Int = 0
     private lateinit var fabNextQ: FloatingActionButton
     private lateinit var fabPrevQ: FloatingActionButton
     private lateinit var fabRead: FloatingActionButton
-    private lateinit var txQuestion: TextView
+ //   private lateinit var txQuestion: TextView
     private lateinit var txAnswer: TextView
     private lateinit var txCode: TextView
     private var qNas: ArrayList<QnA> = ArrayList()
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        txToolBar = findViewById(binding.txToolbar.id)
         findViewByIds()
 
         val data = intent.extras!!.getString("topic", "defaultKey")
@@ -56,7 +58,8 @@ class MainActivity : AppCompatActivity() {
         qCount = dataIndex
 
         if (questsAndAns.size >= dataIndex) {
-            txQuestion.text = Html.fromHtml(questsAndAns[dataIndex].get("question"))
+            txToolBar.text = (Html.fromHtml(questsAndAns[dataIndex].get("question")))
+//            txQuestion.text = Html.fromHtml(questsAndAns[dataIndex].get("question"))
             txAnswer.text = Html.fromHtml(questsAndAns[dataIndex].get("answer"))
             if (questsAndAns[dataIndex].get("code")?.length!! > 5) {
                 txCode.visibility = View.VISIBLE
@@ -83,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 fabRead.setImageResource(android.R.drawable.ic_btn_speak_now)
                 val strToSpeak =
-                    txQuestion.text.toString().replace("'", "") + "." + txAnswer.text.toString()
+                    txToolBar.text.toString().replace("'", "") + "." + txAnswer.text.toString()
                         .replace("`", "")
                 textToSpeech.speak(strToSpeak, TextToSpeech.QUEUE_FLUSH, null, "unique_id")
             }
@@ -96,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             }
             qCount++
             if (questsAndAns.size > qCount) {
-                txQuestion.text = Html.fromHtml(questsAndAns[qCount].get("question"))
+                txToolBar.text = Html.fromHtml(questsAndAns[qCount].get("question"))
                 txAnswer.text = Html.fromHtml(questsAndAns[qCount].get("answer"))
                 if (questsAndAns[qCount].get("code")?.length!! > 5) {
                     txCode.visibility = View.VISIBLE
@@ -112,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             }
             qCount--
             if (qCount >= 0) {
-                txQuestion.text = Html.fromHtml(questsAndAns[qCount].get("question"))
+                txToolBar.text = Html.fromHtml(questsAndAns[qCount].get("question"))
                 txAnswer.text = Html.fromHtml(questsAndAns[qCount].get("answer"))
                 if (questsAndAns[qCount].get("code")?.length!! > 5) {
                     txCode.visibility = View.VISIBLE
@@ -136,8 +139,6 @@ class MainActivity : AppCompatActivity() {
         fabPrevQ = findViewById(R.id.fab_prev)
         fabRead = findViewById(R.id.fab_read)
         relativeLayoutMain = findViewById(R.id.rl_main)
-        txQuestion = findViewById(R.id.tx_q)
-        txQuestion.setMovementMethod(ScrollingMovementMethod())
         txAnswer = findViewById(R.id.tx_a)
         txAnswer.setMovementMethod(ScrollingMovementMethod())
         txCode = findViewById(R.id.tx_c)

@@ -42,22 +42,14 @@
         app:srcCompat="@android:drawable/ic_media_previous"
         tools:ignore="HardcodedText" />
 
-    <TextView
-        android:id="@+id/tx_q"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/fab_margin"
-        android:scrollbars="vertical"
-        android:textSize="25sp"
-        android:textStyle="bold" />
 
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/fab_next"
-        android:layout_below="@+id/tx_q">
+        android:layout_alignParentTop="true"
+        android:layout_margin="@dimen/fab_margin">
 
 
         <LinearLayout
