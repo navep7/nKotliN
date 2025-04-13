@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.OnClickListener
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,7 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
 
+    private var dataIndex: Int = 0
     private lateinit var txToolBar: TextView
     private lateinit var textToSpeech: TextToSpeech
     private var index: Int = 0
@@ -50,12 +52,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         txToolBar = findViewById(binding.txToolbar.id)
+        initStuff()
         findViewByIds()
-
-        val data = intent.extras!!.getString("topic", "defaultKey")
-        makeToast("GOT - " + data)
-        var dataIndex = data.toInt()
-        qCount = dataIndex
+        OnClickListeners()
 
         if (questsAndAns.size >= dataIndex) {
             txToolBar.text = (Html.fromHtml(questsAndAns[dataIndex].get("question")))
@@ -78,6 +77,16 @@ class MainActivity : AppCompatActivity() {
 
         IndexActivity.db = Firebase.firestore
 
+        setSupportActionBar(binding.toolbar)
+    }
+
+    private fun initStuff() {
+        val data = intent.extras!!.getString("topic", "defaultKey")
+        dataIndex = data.toInt()
+        qCount = dataIndex
+    }
+
+    private fun OnClickListeners() {
         fabRead.setOnClickListener(View.OnClickListener {
 
             if (textToSpeech.isSpeaking) {
@@ -99,13 +108,17 @@ class MainActivity : AppCompatActivity() {
             }
             qCount++
             if (questsAndAns.size > qCount) {
+                fabPrevQ.isEnabled = true
                 txToolBar.text = Html.fromHtml(questsAndAns[qCount].get("question"))
                 txAnswer.text = Html.fromHtml(questsAndAns[qCount].get("answer"))
                 if (questsAndAns[qCount].get("code")?.length!! > 5) {
                     txCode.visibility = View.VISIBLE
                     txCode.text = Html.fromHtml(questsAndAns[qCount].get("code"))
                 } else txCode.visibility = View.INVISIBLE
-            } else IndexActivity.makeToast("All Qs loaded!")
+            } else {
+                makeToast("All Qs loaded!")
+                fabNextQ.isEnabled = false
+            }
         })
 
         fabPrevQ.setOnClickListener(View.OnClickListener {
@@ -113,18 +126,21 @@ class MainActivity : AppCompatActivity() {
                 fabRead.setImageResource(android.R.drawable.stat_notify_call_mute)
                 textToSpeech.stop()
             }
-            qCount--
-            if (qCount >= 0) {
+
+            if (qCount > 0) {
+                fabNextQ.isEnabled = true
+                qCount--
                 txToolBar.text = Html.fromHtml(questsAndAns[qCount].get("question"))
                 txAnswer.text = Html.fromHtml(questsAndAns[qCount].get("answer"))
                 if (questsAndAns[qCount].get("code")?.length!! > 5) {
                     txCode.visibility = View.VISIBLE
                     txCode.text = Html.fromHtml(questsAndAns[qCount].get("code"))
                 } else txCode.visibility = View.INVISIBLE
-            } else makeToast("Showing 1st Q!")
+            } else {
+                fabPrevQ.isEnabled = false
+                makeToast("Showing 1st Q!")
+            }
         })
-
-        setSupportActionBar(binding.toolbar)
     }
 
 

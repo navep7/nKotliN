@@ -16,7 +16,7 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/fab_margin"
         android:contentDescription="fab"
-        app:srcCompat="@android:drawable/ic_media_next"
+        app:srcCompat="@drawable/nk_icon"
         tools:ignore="HardcodedText" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -39,7 +39,7 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/fab_margin"
         android:contentDescription="fab"
-        app:srcCompat="@android:drawable/ic_media_previous"
+        app:srcCompat="@drawable/nk_icon_inverted"
         tools:ignore="HardcodedText" />
 
 

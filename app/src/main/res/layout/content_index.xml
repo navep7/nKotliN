@@ -12,7 +12,8 @@
         android:id="@+id/edtx_search"
         android:hint="Search"
         android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginStart="@dimen/fab_margin"
+        android:layout_marginTop="@dimen/fab_margin"
         android:layout_toStartOf="@+id/fab_x"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,8 +21,10 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_x"
+        app:fabSize="mini"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/fab_margin"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -18,6 +18,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -56,19 +57,25 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
     private fun OnClickListeners() {
 
-        fabX.setOnClickListener(OnClickListener {
+        fabX.setOnClickListener({
             editTextSeach.setText("")
             ReadData()
+        })
+
+        fabInfo.setOnClickListener({
+            Snackbar.make(
+                window.decorView,
+                "Contact, for contributing.. - \n +918884846307 / xxx_xx@gmail.com",
+                Snackbar.LENGTH_LONG
+            ).show()
         })
     }
 
     private fun initSearch() {
         editTextSeach.addTextChangedListener { input ->
             if (input != null) {
-                if (input.length == 0)
-                    ReadData()
+                if (input.length == 0) ReadData()
                 else if (input.contains(" ")) {
-                    makeToast("onTC - " + input)
                     rvAdapter.filter.filter(input)
                 }
             }
@@ -95,32 +102,30 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     private fun ReadData() {
 
         arrayListIndex.clear()
+        questsAndAns.clear()
 
-        db.collection("questions")
-            .get()
-            .addOnSuccessListener { result ->
+        db.collection("questions").get().addOnSuccessListener { result ->
 
                 for (document in result) {
                     for (item in 0 until document.data.size) {
                         var values =
                             (document.data.getValue((item + 1).toString()) as Map<String, *>)
 
-                        arrayListIndex.add(values["Q"].toString())
-                        rvAdapter.notifyDataSetChanged()
-                        questsAndAns.add(
-                            hashMapOf(
-                                "question" to values["Q"].toString(),
-                                "answer" to values["A"].toString(),
-                                "code" to values["C"].toString(),
+                        if (!arrayListIndex.contains(values["Q"].toString())) {
+                            arrayListIndex.add(values["Q"].toString())
+                            rvAdapter.notifyDataSetChanged()
+                            questsAndAns.add(
+                                hashMapOf(
+                                    "question" to values["Q"].toString(),
+                                    "answer" to values["A"].toString(),
+                                    "code" to values["C"].toString(),
+                                )
                             )
-                        )
+                        }
                     }
                 }
 
-
-                makeToast("TotalQnAs - " + questsAndAns.size)
-            }
-            .addOnFailureListener { exception ->
+            }.addOnFailureListener { exception ->
                 makeToast("Error getting documents." + exception)
             }
     }
@@ -128,7 +133,7 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     companion object {
         fun makeToast(s: String) {
             Log.d("makeToastin6", s)
-               Toast.makeText(appContext, s, Toast.LENGTH_SHORT).show()
+            Toast.makeText(appContext, s, Toast.LENGTH_SHORT).show()
         }
 
         lateinit var rvAdapter: MyRecyclerViewAdapter
@@ -140,11 +145,9 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     }
 
     override fun onItemClick(view: View?, position: Int) {
-        makeToast(arrayListIndex.get(position))
         startActivity(
             Intent(appContext, MainActivity::class.java).putExtra(
-                "topic",
-                position.toString()
+                "topic", position.toString()
             )
         )
     }
