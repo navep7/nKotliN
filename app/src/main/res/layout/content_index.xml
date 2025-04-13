@@ -19,13 +19,14 @@
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_x"
-        app:fabSize="mini"
+    <TextView
+        android:id="@+id/tx_x"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_alignBaseline="@+id/edtx_search"
+        android:text="x"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText" />

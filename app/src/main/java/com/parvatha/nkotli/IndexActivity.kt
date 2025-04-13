@@ -1,6 +1,7 @@
 package com.parvatha.nkotli
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -28,7 +30,7 @@ import com.parvatha.nkotli.databinding.ActivityIndexBinding
 
 class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener {
 
-    private lateinit var fabX: FloatingActionButton
+    private lateinit var textViewX: TextView
     private lateinit var editTextSeach: EditText
     private lateinit var fabInfo: FloatingActionButton
     private lateinit var recyclerViewIndex: RecyclerView
@@ -57,7 +59,7 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
     private fun OnClickListeners() {
 
-        fabX.setOnClickListener({
+        textViewX.setOnClickListener({
             editTextSeach.setText("")
             ReadData()
         })
@@ -74,10 +76,10 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     private fun initSearch() {
         editTextSeach.addTextChangedListener { input ->
             if (input != null) {
-                if (input.length == 0) ReadData()
-                else if (input.contains(" ")) {
+                if (input.isEmpty())
+                    ReadData()
+                else
                     rvAdapter.filter.filter(input)
-                }
             }
         }
     }
@@ -91,7 +93,7 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     }
 
     private fun findViewByIds() {
-        fabX = findViewById(R.id.fab_x)
+        textViewX = findViewById(R.id.tx_x)
         recyclerViewIndex = findViewById(R.id.rv_index)
         fabInfo = findViewById(R.id.fab_info)
         editTextSeach = findViewById(R.id.edtx_search)
@@ -100,6 +102,10 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
     @SuppressLint("NotifyDataSetChanged")
     private fun ReadData() {
+
+        var pdRead = ProgressDialog(this)
+        pdRead.setMessage("Fetching Content...")
+        pdRead.show()
 
         arrayListIndex.clear()
         questsAndAns.clear()
@@ -123,6 +129,7 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
                             )
                         }
                     }
+                    pdRead.dismiss()
                 }
 
             }.addOnFailureListener { exception ->
