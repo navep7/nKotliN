@@ -1,23 +1,32 @@
 package com.parvatha.nkotli
 
+import android.accounts.AccountManager
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.speech.tts.TextToSpeech
 import android.text.Html
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.view.View.OnClickListener
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
+import com.google.android.gms.auth.GoogleAuthUtil
+import com.google.android.gms.common.AccountPicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.parvatha.nkotli.IndexActivity.Companion.db
 import com.parvatha.nkotli.IndexActivity.Companion.makeToast
 import com.parvatha.nkotli.databinding.ActivityMainBinding
 import java.util.Locale
@@ -26,6 +35,9 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
 
+    private lateinit var possibleEmail: String
+    private val REQUEST_CODE_EMAIL: Int = 1
+    private lateinit var buttonPost: ImageButton
     private var dataIndex: Int = 0
     private lateinit var txToolBar: TextView
     private lateinit var textToSpeech: TextToSpeech
@@ -34,7 +46,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fabNextQ: FloatingActionButton
     private lateinit var fabPrevQ: FloatingActionButton
     private lateinit var fabRead: FloatingActionButton
- //   private lateinit var txQuestion: TextView
+
+    //   private lateinit var txQuestion: TextView
     private lateinit var txAnswer: TextView
     private lateinit var txCode: TextView
     private var qNas: ArrayList<QnA> = ArrayList()
@@ -52,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         txToolBar = findViewById(binding.txToolbar.id)
+        buttonPost = findViewById(binding.actionImgbtnEdit.id)
         initStuff()
         findViewByIds()
         OnClickListeners()
@@ -79,6 +93,7 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
     }
+
 
     private fun initStuff() {
         val data = intent.extras!!.getString("topic", "defaultKey")
@@ -141,8 +156,73 @@ class MainActivity : AppCompatActivity() {
                 makeToast("Showing 1st Q!")
             }
         })
+
+        buttonPost.setOnClickListener {
+
+            makeToast(" Qno. " + qCount)
+
+            try {
+                val intent = AccountPicker.newChooseAccountIntent(
+                    null, null,
+                    arrayOf(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE), false, null, null, null, null
+                )
+                startActivityForResult(intent, REQUEST_CODE_EMAIL)
+            } catch (e: ActivityNotFoundException) {
+                // TODO
+            }
+
+
+        }
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_EMAIL && resultCode == RESULT_OK) {
+            val accountName = data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+            possibleEmail = accountName.toString()
+
+            val alertDialog = AlertDialog.Builder(this)
+                .setTitle(possibleEmail)
+                .setMessage("Post your Comment")
+
+            val input = EditText(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT
+                )
+            }
+            input.requestFocus()
+            input.postDelayed(Runnable {
+                val inputMethodManager =
+                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT)
+            }, 100)
+
+            alertDialog.setView(input)
+            alertDialog.setIcon(R.drawable.nk_icon)
+
+            alertDialog.setPositiveButton("Post") { dialog, which ->
+
+                db.collection("questions").get().addOnSuccessListener { result ->
+
+                    var Q = (result.documents[0][(qCount + 1).toString()] as Map<*, *>)
+
+                    makeToast("yet2Update Doc Q - " + Q["Q"])
+
+
+                }
+            }
+
+            alertDialog.setNegativeButton("Cancel") { dialog, which ->
+                makeToast("Cancel")
+                dialog.cancel()
+            }
+
+            alertDialog.show()
+
+        }
+    }
 
     override fun onPause() {
         textToSpeech.stop()

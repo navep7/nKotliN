@@ -166,7 +166,7 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         db.collection("questions").get().addOnSuccessListener { result ->
 
                 for (document in result) {
-                    for (item in 0 until document.data.size) {
+                    for (item in 0 until document.data.size - 1) {
                         var values =
                             (document.data.getValue((item + 1).toString()) as Map<String, *>)
 
