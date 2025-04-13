@@ -1,7 +1,6 @@
 package com.parvatha.nkotli
 
 import android.annotation.SuppressLint
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -30,9 +29,9 @@ import com.parvatha.nkotli.databinding.ActivityIndexBinding
 import java.util.HashMap
 
 
-class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener {
+class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
 
-    private val arrayListOfflineQs: ArrayList<QnA> = ArrayList()
+
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var textViewX: TextView
     private lateinit var editTextSeach: EditText
@@ -139,7 +138,7 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     private fun initRv() {
 
         recyclerViewIndex.layoutManager = LinearLayoutManager(this)
-        rvAdapter = MyRecyclerViewAdapter(this, arrayListIndex)
+        rvAdapter = RvIndexAdapter(this, arrayListIndex)
         rvAdapter.setClickListener(this)
         recyclerViewIndex.adapter = rvAdapter
     }
@@ -152,63 +151,66 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     }
 
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun ReadData() {
-
-        /*var pdRead = ProgressDialog(this)
-        pdRead.setMessage("Fetching Content...")
-        pdRead.show()*/
-
-        arrayListIndex.clear()
-        questsAndAns.clear()
-
-        if (arrayListOfflineQs.isEmpty())
-        db.collection("questions").get().addOnSuccessListener { result ->
-
-                for (document in result) {
-                    for (item in 0 until document.data.size - 1) {
-                        var values =
-                            (document.data.getValue((item + 1).toString()) as Map<String, *>)
-
-                        if (!arrayListIndex.contains(values["Q"].toString())) {
-                            arrayListIndex.add(values["Q"].toString())
-                            rvAdapter.notifyDataSetChanged()
-                            questsAndAns.add(
-                                hashMapOf(
-                                    "question" to values["Q"].toString(),
-                                    "answer" to values["A"].toString(),
-                                    "code" to values["C"].toString(),
-                                )
-                            )
-                        }
-                    }
-                //    pdRead.dismiss()
-                }
-
-            }.addOnFailureListener { exception ->
-                makeToast("Error getting documents." + exception)
-            }
-        else {
-            makeToast("loading from Offline")
-            for (i in 0 until arrayListOfflineQs.size) {
-                questsAndAns.add(
-                    hashMapOf(
-                        "question" to arrayListOfflineQs.get(i).strQ,
-                        "answer" to arrayListOfflineQs.get(i).strA,
-                        "code" to arrayListOfflineQs.get(i).strC,
-                    )
-                )
-            }
-        }
-    }
-
     companion object {
         fun makeToast(s: String) {
             Log.d("makeToastin6", s)
             Toast.makeText(appContext, s, Toast.LENGTH_SHORT).show()
         }
 
-        lateinit var rvAdapter: MyRecyclerViewAdapter
+        fun ReadData() {
+
+            /*var pdRead = ProgressDialog(this)
+            pdRead.setMessage("Fetching Content...")
+            pdRead.show()*/
+
+            arrayListIndex.clear()
+            questsAndAns.clear()
+
+            if (arrayListOfflineQs.isEmpty())
+                db.collection("questions").get().addOnSuccessListener { result ->
+
+                    for (document in result) {
+                        for (item in 0 until document.data.size - 1) {
+                            var values =
+                                (document.data.getValue((item + 1).toString()) as Map<String, *>)
+
+                            if (!arrayListIndex.contains(values["Q"].toString()) || readAgain) {
+                                readAgain = false
+                                arrayListIndex.add(values["Q"].toString())
+                                rvAdapter.notifyDataSetChanged()
+                                questsAndAns.add(
+                                    hashMapOf(
+                                        "question" to values["Q"].toString(),
+                                        "answer" to values["A"].toString(),
+                                        "code" to values["C"].toString(),
+                                        "comments" to values["CC"].toString(),
+                                    )
+                                )
+                            }
+                        }
+                        //    pdRead.dismiss()
+                    }
+
+                }.addOnFailureListener { exception ->
+                    makeToast("Error getting documents." + exception)
+                }
+            else {
+                makeToast("loading from Offline")
+                for (i in 0 until arrayListOfflineQs.size) {
+                    questsAndAns.add(
+                        hashMapOf(
+                            "question" to arrayListOfflineQs.get(i).strQ,
+                            "answer" to arrayListOfflineQs.get(i).strA,
+                            "code" to arrayListOfflineQs.get(i).strC,
+                        )
+                    )
+                }
+            }
+        }
+
+        var readAgain: Boolean = false
+        var arrayListOfflineQs: ArrayList<QnA> = ArrayList()
+        lateinit var rvAdapter: RvIndexAdapter
         var arrayListIndex: java.util.ArrayList<String> = ArrayList()
         lateinit var appContext: Context
 

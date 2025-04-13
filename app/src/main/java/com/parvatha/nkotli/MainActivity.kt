@@ -20,10 +20,11 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.parvatha.nkotli.IndexActivity.Companion.db
@@ -35,6 +36,9 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
 
+    private lateinit var recyclerViewComments: RecyclerView
+    private lateinit var rvCommentsAdapter: RvCommentsAdapter
+    private val listComments: ArrayList<String> = ArrayList()
     private lateinit var possibleEmail: String
     private val REQUEST_CODE_EMAIL: Int = 1
     private lateinit var buttonPost: ImageButton
@@ -69,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         initStuff()
         findViewByIds()
         OnClickListeners()
+        rvInit()
 
         if (questsAndAns.size >= dataIndex) {
             txToolBar.text = (Html.fromHtml(questsAndAns[dataIndex].get("question")))
@@ -78,6 +83,12 @@ class MainActivity : AppCompatActivity() {
                 txCode.visibility = View.VISIBLE
                 txCode.text = Html.fromHtml(questsAndAns[dataIndex].get("code"))
             } else txCode.visibility = View.INVISIBLE
+            if (questsAndAns[dataIndex].get("comments") != null)
+            if (questsAndAns[dataIndex].get("comments")?.length!! > 5) {
+                listComments.add(questsAndAns[dataIndex].get("comments").toString())
+                rvCommentsAdapter.notifyDataSetChanged()
+                recyclerViewComments.visibility = View.VISIBLE
+            } else recyclerViewComments.visibility = View.INVISIBLE
         }
 
         textToSpeech = TextToSpeech(this) { status ->
@@ -94,6 +105,15 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
     }
 
+    private fun rvInit() {
+
+        recyclerViewComments = findViewById<RecyclerView>(R.id.rv_comments)
+        recyclerViewComments.layoutManager = LinearLayoutManager(this)
+        rvCommentsAdapter = RvCommentsAdapter(applicationContext, listComments)
+      //  adapter.setClickListener(MainActivity.this)
+        recyclerViewComments.adapter = rvCommentsAdapter
+    }
+
 
     private fun initStuff() {
         val data = intent.extras!!.getString("topic", "defaultKey")
@@ -102,6 +122,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun OnClickListeners() {
+
+
         fabRead.setOnClickListener(View.OnClickListener {
 
             if (textToSpeech.isSpeaking) {
@@ -206,10 +228,20 @@ class MainActivity : AppCompatActivity() {
 
                 db.collection("questions").get().addOnSuccessListener { result ->
 
-                    var Q = (result.documents[0][(qCount + 1).toString()] as Map<*, *>)
+                    result.documents[0].reference.update(
+                        "${qCount + 1}.CC",
+                          input.text.toString() + " !$! -" + possibleEmail
+                    )
+                        .addOnSuccessListener {
+                            makeToast("DocumentSnapshot successfully updated!")
+                            IndexActivity.readAgain = true
+                            IndexActivity.ReadData()
+                            listComments.add(input.text.toString())
+                            rvCommentsAdapter.notifyDataSetChanged()
 
-                    makeToast("yet2Update Doc Q - " + Q["Q"])
 
+                        }
+                        .addOnFailureListener { e -> makeToast("Error updating document" + e.message) }
 
                 }
             }

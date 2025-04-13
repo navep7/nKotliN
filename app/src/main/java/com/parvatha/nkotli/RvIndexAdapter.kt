@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.ArrayList
 
 
-class MyRecyclerViewAdapter internal constructor(
+class RvIndexAdapter internal constructor(
     context: Context?,
     private var mData: List<String>
 ) :
-    RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder>(), Filterable {
+    RecyclerView.Adapter<RvIndexAdapter.ViewHolder>(), Filterable {
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mClickListener: ItemClickListener? = null
 
