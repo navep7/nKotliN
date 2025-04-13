@@ -27,10 +27,12 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.parvatha.nkotli.MainActivity.Companion.questsAndAns
 import com.parvatha.nkotli.databinding.ActivityIndexBinding
+import java.util.HashMap
 
 
 class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener {
 
+    private val arrayListOfflineQs: ArrayList<QnA> = ArrayList()
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var textViewX: TextView
     private lateinit var editTextSeach: EditText
@@ -88,11 +90,23 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
                     sharedPrefs.edit().putBoolean("DM", true).apply()
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 }
+            }
 
+            R.id.action_save_offline-> {
+                if (arrayListOfflineQs.isEmpty()) {
+                    makeToast("Saving...")
+                    saveOffline(questsAndAns)
+                } else makeToast("Already Dld - " + arrayListOfflineQs.size)
             }
 
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun saveOffline(questsAndAns: java.util.ArrayList<HashMap<String, String>>) {
+
+        makeToast("yet2Impl")
+
     }
 
     private fun OnClickListeners() {
@@ -148,6 +162,7 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         arrayListIndex.clear()
         questsAndAns.clear()
 
+        if (arrayListOfflineQs.isEmpty())
         db.collection("questions").get().addOnSuccessListener { result ->
 
                 for (document in result) {
@@ -173,6 +188,18 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
             }.addOnFailureListener { exception ->
                 makeToast("Error getting documents." + exception)
             }
+        else {
+            makeToast("loading from Offline")
+            for (i in 0 until arrayListOfflineQs.size) {
+                questsAndAns.add(
+                    hashMapOf(
+                        "question" to arrayListOfflineQs.get(i).strQ,
+                        "answer" to arrayListOfflineQs.get(i).strA,
+                        "code" to arrayListOfflineQs.get(i).strC,
+                    )
+                )
+            }
+        }
     }
 
     companion object {
