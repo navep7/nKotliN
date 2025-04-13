@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="@dimen/fab_margin"
         android:layout_marginTop="@dimen/fab_margin"
-        android:layout_toStartOf="@+id/fab_x"
+        android:layout_toStartOf="@+id/tx_x"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText" />
@@ -26,6 +26,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:layout_alignBaseline="@+id/edtx_search"
         android:text="x"
+        android:textColor="@color/black"
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

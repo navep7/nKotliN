@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_dark_mode"
+        android:icon="@drawable/dm_yy"
+        android:title="dm"
+        app:showAsAction="ifRoom"/>
+
+</menu>

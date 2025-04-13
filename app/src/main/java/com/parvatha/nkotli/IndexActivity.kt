@@ -4,17 +4,18 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
-import android.view.View.OnClickListener
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +31,7 @@ import com.parvatha.nkotli.databinding.ActivityIndexBinding
 
 class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener {
 
+    private lateinit var sharedPrefs: SharedPreferences
     private lateinit var textViewX: TextView
     private lateinit var editTextSeach: EditText
     private lateinit var fabInfo: FloatingActionButton
@@ -45,6 +47,13 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         setSupportActionBar(binding.toolbar)
 
         appContext = applicationContext
+        sharedPrefs = this.getSharedPreferences(
+            "com.parvatha.nkotli", MODE_PRIVATE
+        )
+
+        if (sharedPrefs.getBoolean("DM", false))
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         findViewByIds()
 
@@ -55,6 +64,35 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         initSearch()
         OnClickListeners()
 
+    }
+
+    override fun onDestroy() {
+
+        super.onDestroy()
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if (menu is MenuBuilder) (menu as MenuBuilder).setOptionalIconsVisible(true)
+        menuInflater.inflate(R.menu.simple_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_dark_mode-> {
+                if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+                    sharedPrefs.edit().putBoolean("DM", false).apply()
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                } else {
+                    sharedPrefs.edit().putBoolean("DM", true).apply()
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                }
+
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun OnClickListeners() {
@@ -103,9 +141,9 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
     @SuppressLint("NotifyDataSetChanged")
     private fun ReadData() {
 
-        var pdRead = ProgressDialog(this)
+        /*var pdRead = ProgressDialog(this)
         pdRead.setMessage("Fetching Content...")
-        pdRead.show()
+        pdRead.show()*/
 
         arrayListIndex.clear()
         questsAndAns.clear()
@@ -129,7 +167,7 @@ class IndexActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
                             )
                         }
                     }
-                    pdRead.dismiss()
+                //    pdRead.dismiss()
                 }
 
             }.addOnFailureListener { exception ->
