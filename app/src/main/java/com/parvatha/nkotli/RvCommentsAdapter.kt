@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class RvCommentsAdapter internal constructor(
     context: Context?,
-    private val mData: List<String>
+    private val mComments: List<Comment>
 ) :
     RecyclerView.Adapter<RvCommentsAdapter.ViewHolder>() {
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
@@ -24,20 +24,25 @@ class RvCommentsAdapter internal constructor(
 
     // binds the data to the TextView in each row
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val animal = mData[position]
-        holder.myTextView.text = animal
+        val comment: Comment = mComments[position]
+        holder.txComment.text = comment.strComment
+        holder.txTime.text = comment.strCommentTime
+        holder.txUser.text = comment.strCommentUser
     }
 
     // total number of rows
     override fun getItemCount(): Int {
-        return mData.size
+        return mComments.size
     }
 
 
     // stores and recycles views as they are scrolled off screen
     inner class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
-        var myTextView: TextView = itemView.findViewById(R.id.tx_comment)
+        var txComment: TextView = itemView.findViewById(R.id.tx_comment)
+        var txTime: TextView = itemView.findViewById(R.id.tx_time)
+        var txUser: TextView = itemView.findViewById(R.id.tx_user)
+
 
         init {
             itemView.setOnClickListener(this)
@@ -50,7 +55,7 @@ class RvCommentsAdapter internal constructor(
 
     // convenience method for getting data at click position
     fun getItem(id: Int): String {
-        return mData[id]
+        return mComments[0].toString()
     }
 
     // allows clicks events to be caught

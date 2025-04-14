@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerViewComments: RecyclerView
     private lateinit var rvCommentsAdapter: RvCommentsAdapter
-    private val listComments: ArrayList<String> = ArrayList()
+    private val listComments: ArrayList<Comment> = ArrayList()
     private lateinit var possibleEmail: String
     private val REQUEST_CODE_EMAIL: Int = 1
     private lateinit var buttonPost: ImageButton
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         rvInit()
 
         if (questsAndAns.size >= dataIndex) {
-            txToolBar.text = (Html.fromHtml(questsAndAns[dataIndex].get("question")))
+            txToolBar.text = (Html.fromHtml(questsAndAns[dataIndex].get("question"))).toString() + "up!"
 //            txQuestion.text = Html.fromHtml(questsAndAns[dataIndex].get("question"))
             txAnswer.text = Html.fromHtml(questsAndAns[dataIndex].get("answer"))
             if (questsAndAns[dataIndex].get("code")?.length!! > 5) {
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             } else txCode.visibility = View.INVISIBLE
             if (questsAndAns[dataIndex].get("comments") != null)
             if (questsAndAns[dataIndex].get("comments")?.length!! > 5) {
-                listComments.add(questsAndAns[dataIndex].get("comments").toString())
+                listComments.add(Comment(questsAndAns[dataIndex].get("comments").toString(), "g ", " jhv"))
                 rvCommentsAdapter.notifyDataSetChanged()
                 recyclerViewComments.visibility = View.VISIBLE
             } else recyclerViewComments.visibility = View.INVISIBLE
@@ -181,8 +181,6 @@ class MainActivity : AppCompatActivity() {
 
         buttonPost.setOnClickListener {
 
-            makeToast(" Qno. " + qCount)
-
             try {
                 val intent = AccountPicker.newChooseAccountIntent(
                     null, null,
@@ -192,8 +190,6 @@ class MainActivity : AppCompatActivity() {
             } catch (e: ActivityNotFoundException) {
                 // TODO
             }
-
-
         }
     }
 
@@ -208,41 +204,42 @@ class MainActivity : AppCompatActivity() {
                 .setTitle(possibleEmail)
                 .setMessage("Post your Comment")
 
-            val input = EditText(this).apply {
+            val editTextComment = EditText(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT
                 )
             }
-            input.requestFocus()
-            input.postDelayed(Runnable {
+            editTextComment.requestFocus()
+            editTextComment.postDelayed(Runnable {
                 val inputMethodManager =
                     getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT)
+                inputMethodManager.showSoftInput(editTextComment, InputMethodManager.SHOW_IMPLICIT)
             }, 100)
 
-            alertDialog.setView(input)
+            alertDialog.setView(editTextComment)
             alertDialog.setIcon(R.drawable.nk_icon)
 
             alertDialog.setPositiveButton("Post") { dialog, which ->
 
-                db.collection("questions").get().addOnSuccessListener { result ->
 
+                var comment: Comment = Comment(editTextComment.text.toString(), possibleEmail, "time")
+
+                db.collection("questions").get().addOnSuccessListener { result ->
                     result.documents[0].reference.update(
                         "${qCount + 1}.CC",
-                          input.text.toString() + " !$! -" + possibleEmail
+                        editTextComment.text.toString()
                     )
                         .addOnSuccessListener {
                             makeToast("DocumentSnapshot successfully updated!")
                             IndexActivity.readAgain = true
                             IndexActivity.ReadData()
-                            listComments.add(input.text.toString())
+                            recyclerViewComments.visibility = View.VISIBLE
+                            listComments.add(comment)
                             rvCommentsAdapter.notifyDataSetChanged()
-
 
                         }
                         .addOnFailureListener { e -> makeToast("Error updating document" + e.message) }
-
                 }
             }
 
