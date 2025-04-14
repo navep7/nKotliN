@@ -56,6 +56,8 @@ class MainActivity : AppCompatActivity() {
     //   private lateinit var txQuestion: TextView
     private lateinit var txAnswer: TextView
     private lateinit var txCode: TextView
+    private lateinit var txCodeSample: TextView
+    private lateinit var txCommentSample: TextView
     private var qNas: ArrayList<QnA> = ArrayList()
     private lateinit var relativeLayoutMain: RelativeLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -84,8 +86,12 @@ class MainActivity : AppCompatActivity() {
             txAnswer.text = Html.fromHtml(questsAndAns[dataIndex].get("answer"))
             if (questsAndAns[dataIndex].get("code")?.length!! > 5) {
                 txCode.visibility = View.VISIBLE
+                txCodeSample.visibility = View.VISIBLE
                 txCode.text = Html.fromHtml(questsAndAns[dataIndex].get("code"))
-            } else txCode.visibility = View.INVISIBLE
+            } else {
+                txCode.visibility = View.INVISIBLE
+                txCodeSample.visibility = View.INVISIBLE
+            }
             if (questsAndAns[dataIndex].get("comments") != null)
                 if (questsAndAns[dataIndex].get("comments")?.length!! > 5) {
                     /*     var cSplit = (questsAndAns[dataIndex].get("comments").toString().split("|||"))
@@ -96,13 +102,14 @@ class MainActivity : AppCompatActivity() {
                             commentsReceived[i].split("|||")
                         listComments.add(Comment(cSplit.get(1), cSplit.get(0), cSplit.get(2)))
                     }
-                    /*
-                    cS received -
-                            i.naveen.prakash@gmail.com ||| calculate 1 ||| 14-04-2025 19:08:44~~~i.nave.prakash@gmail.com ||| calculate 2 ||| 14-04-2025 19:09:03
-                                */
+
                     rvCommentsAdapter.notifyDataSetChanged()
                     recyclerViewComments.visibility = View.VISIBLE
-                } else recyclerViewComments.visibility = View.INVISIBLE
+                    txCommentSample.visibility = View.VISIBLE
+                } else {
+                    txCommentSample.visibility = View.INVISIBLE
+                    recyclerViewComments.visibility = View.INVISIBLE
+                }
         }
 
         textToSpeech = TextToSpeech(this) { status ->
@@ -164,8 +171,12 @@ class MainActivity : AppCompatActivity() {
                 txAnswer.text = Html.fromHtml(questsAndAns[qCount].get("answer"))
                 if (questsAndAns[qCount].get("code")?.length!! > 5) {
                     txCode.visibility = View.VISIBLE
+                    txCodeSample.visibility = View.VISIBLE
                     txCode.text = Html.fromHtml(questsAndAns[qCount].get("code"))
-                } else txCode.visibility = View.INVISIBLE
+                } else {
+                    txCodeSample.visibility = View.INVISIBLE
+                    txCode.visibility = View.INVISIBLE
+                }
             } else {
                 makeToast("All Qs loaded!")
                 fabNextQ.isEnabled = false
@@ -185,8 +196,12 @@ class MainActivity : AppCompatActivity() {
                 txAnswer.text = Html.fromHtml(questsAndAns[qCount].get("answer"))
                 if (questsAndAns[qCount].get("code")?.length!! > 5) {
                     txCode.visibility = View.VISIBLE
+                    txCodeSample.visibility = View.VISIBLE
                     txCode.text = Html.fromHtml(questsAndAns[qCount].get("code"))
-                } else txCode.visibility = View.INVISIBLE
+                } else {
+                    txCodeSample.visibility = View.INVISIBLE
+                    txCode.visibility = View.INVISIBLE
+                }
             } else {
                 fabPrevQ.isEnabled = false
                 makeToast("Showing 1st Q!")
@@ -267,6 +282,7 @@ class MainActivity : AppCompatActivity() {
                             IndexActivity.readAgain = true
                             IndexActivity.ReadData()
                             recyclerViewComments.visibility = View.VISIBLE
+                            txCommentSample.visibility = View.VISIBLE
                             //    listComments.add(comment)
                             rvCommentsAdapter.notifyDataSetChanged()
 
@@ -305,6 +321,8 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun findViewByIds() {
+        txCodeSample = findViewById(R.id.tx_codesample)
+        txCommentSample = findViewById(R.id.tx_commentsample)
         fabNextQ = findViewById(R.id.fab_next)
         fabPrevQ = findViewById(R.id.fab_prev)
         fabRead = findViewById(R.id.fab_read)
