@@ -30,6 +30,8 @@ import com.google.firebase.ktx.Firebase
 import com.parvatha.nkotli.IndexActivity.Companion.db
 import com.parvatha.nkotli.IndexActivity.Companion.makeToast
 import com.parvatha.nkotli.databinding.ActivityMainBinding
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 
@@ -76,7 +78,8 @@ class MainActivity : AppCompatActivity() {
         rvInit()
 
         if (questsAndAns.size >= dataIndex) {
-            txToolBar.text = (Html.fromHtml(questsAndAns[dataIndex].get("question"))).toString() + "up!"
+            txToolBar.text =
+                (Html.fromHtml(questsAndAns[dataIndex].get("question"))).toString() + "up!"
 //            txQuestion.text = Html.fromHtml(questsAndAns[dataIndex].get("question"))
             txAnswer.text = Html.fromHtml(questsAndAns[dataIndex].get("answer"))
             if (questsAndAns[dataIndex].get("code")?.length!! > 5) {
@@ -84,11 +87,22 @@ class MainActivity : AppCompatActivity() {
                 txCode.text = Html.fromHtml(questsAndAns[dataIndex].get("code"))
             } else txCode.visibility = View.INVISIBLE
             if (questsAndAns[dataIndex].get("comments") != null)
-            if (questsAndAns[dataIndex].get("comments")?.length!! > 5) {
-                listComments.add(Comment(questsAndAns[dataIndex].get("comments").toString(), "g ", " jhv"))
-                rvCommentsAdapter.notifyDataSetChanged()
-                recyclerViewComments.visibility = View.VISIBLE
-            } else recyclerViewComments.visibility = View.INVISIBLE
+                if (questsAndAns[dataIndex].get("comments")?.length!! > 5) {
+                    /*     var cSplit = (questsAndAns[dataIndex].get("comments").toString().split("|||"))
+                         listComments.add(Comment(cSplit.get(0), cSplit.get(2), cSplit.get(1)))*/
+                    var commentsReceived = questsAndAns[dataIndex].get("comments")!!.split("~~~")
+                    for (i in 0 until commentsReceived.size) {
+                        var cSplit =
+                            commentsReceived[i].split("|||")
+                        listComments.add(Comment(cSplit.get(1), cSplit.get(0), cSplit.get(2)))
+                    }
+                    /*
+                    cS received -
+                            i.naveen.prakash@gmail.com ||| calculate 1 ||| 14-04-2025 19:08:44~~~i.nave.prakash@gmail.com ||| calculate 2 ||| 14-04-2025 19:09:03
+                                */
+                    rvCommentsAdapter.notifyDataSetChanged()
+                    recyclerViewComments.visibility = View.VISIBLE
+                } else recyclerViewComments.visibility = View.INVISIBLE
         }
 
         textToSpeech = TextToSpeech(this) { status ->
@@ -110,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         recyclerViewComments = findViewById<RecyclerView>(R.id.rv_comments)
         recyclerViewComments.layoutManager = LinearLayoutManager(this)
         rvCommentsAdapter = RvCommentsAdapter(applicationContext, listComments)
-      //  adapter.setClickListener(MainActivity.this)
+        //  adapter.setClickListener(MainActivity.this)
         recyclerViewComments.adapter = rvCommentsAdapter
     }
 
@@ -223,19 +237,37 @@ class MainActivity : AppCompatActivity() {
             alertDialog.setPositiveButton("Post") { dialog, which ->
 
 
-                var comment: Comment = Comment(editTextComment.text.toString(), possibleEmail, "time")
+                var comment: Comment = Comment(
+                    editTextComment.text.toString(),
+                    possibleEmail,
+                    getCurrentTimeStamp().toString()
+                )
+                listComments.add(comment)
+
+                var sendMsg = ""
+                for (i in 0 until listComments.size) {
+                    if (sendMsg == "")
+                        sendMsg =
+                            listComments.get(i).strCommentUser + " ||| " + listComments.get(i).strComment + " ||| " + listComments.get(
+                                i
+                            ).strCommentTime
+                    else sendMsg =
+                        sendMsg + "~~~" + listComments.get(i).strCommentUser + " ||| " + listComments.get(
+                            i
+                        ).strComment + " ||| " + listComments.get(i).strCommentTime
+                }
 
                 db.collection("questions").get().addOnSuccessListener { result ->
                     result.documents[0].reference.update(
                         "${qCount + 1}.CC",
-                        editTextComment.text.toString()
+                        sendMsg
                     )
                         .addOnSuccessListener {
                             makeToast("DocumentSnapshot successfully updated!")
                             IndexActivity.readAgain = true
                             IndexActivity.ReadData()
                             recyclerViewComments.visibility = View.VISIBLE
-                            listComments.add(comment)
+                            //    listComments.add(comment)
                             rvCommentsAdapter.notifyDataSetChanged()
 
                         }
@@ -250,6 +282,19 @@ class MainActivity : AppCompatActivity() {
 
             alertDialog.show()
 
+        }
+    }
+
+    fun getCurrentTimeStamp(): String? {
+        try {
+            val dateFormat: SimpleDateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
+            val currentDateTime: String = dateFormat.format(Date()) // Find todays date
+
+            return currentDateTime
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            return null
         }
     }
 
