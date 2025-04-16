@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
         if (questsAndAns.size >= dataIndex) {
             txToolBar.text =
-                (Html.fromHtml(questsAndAns[dataIndex].get("question"))).toString() + "up!"
+                (Html.fromHtml(questsAndAns[dataIndex].get("question"))).toString()
 //            txQuestion.text = Html.fromHtml(questsAndAns[dataIndex].get("question"))
             txAnswer.text = Html.fromHtml(questsAndAns[dataIndex].get("answer"))
             if (questsAndAns[dataIndex].get("code")?.length!! > 5) {
