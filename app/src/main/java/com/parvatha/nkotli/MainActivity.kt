@@ -94,8 +94,6 @@ class MainActivity : AppCompatActivity() {
             }
             if (questsAndAns[dataIndex].get("comments") != null)
                 if (questsAndAns[dataIndex].get("comments")?.length!! > 5) {
-                    /*     var cSplit = (questsAndAns[dataIndex].get("comments").toString().split("|||"))
-                         listComments.add(Comment(cSplit.get(0), cSplit.get(2), cSplit.get(1)))*/
                     var commentsReceived = questsAndAns[dataIndex].get("comments")!!.split("~~~")
                     for (i in 0 until commentsReceived.size) {
                         var cSplit =
@@ -160,6 +158,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         fabNextQ.setOnClickListener(View.OnClickListener {
+            listComments.clear()
             if (textToSpeech.isSpeaking) {
                 fabRead.setImageResource(android.R.drawable.stat_notify_call_mute)
                 textToSpeech.stop()
@@ -177,6 +176,22 @@ class MainActivity : AppCompatActivity() {
                     txCodeSample.visibility = View.INVISIBLE
                     txCode.visibility = View.INVISIBLE
                 }
+                if (questsAndAns[qCount].get("comments") != null)
+                    if (questsAndAns[qCount].get("comments")?.length!! > 5) {
+                        var commentsReceived = questsAndAns[qCount].get("comments")!!.split("~~~")
+                        for (i in 0 until commentsReceived.size) {
+                            var cSplit =
+                                commentsReceived[i].split("|||")
+                            listComments.add(Comment(cSplit.get(1), cSplit.get(0), cSplit.get(2)))
+                        }
+
+                        rvCommentsAdapter.notifyDataSetChanged()
+                        recyclerViewComments.visibility = View.VISIBLE
+                        txCommentSample.visibility = View.VISIBLE
+                    } else {
+                        txCommentSample.visibility = View.INVISIBLE
+                        recyclerViewComments.visibility = View.INVISIBLE
+                    }
             } else {
                 makeToast("All Qs loaded!")
                 fabNextQ.isEnabled = false
@@ -184,6 +199,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         fabPrevQ.setOnClickListener(View.OnClickListener {
+            listComments.clear()
             if (textToSpeech.isSpeaking) {
                 fabRead.setImageResource(android.R.drawable.stat_notify_call_mute)
                 textToSpeech.stop()
@@ -202,6 +218,22 @@ class MainActivity : AppCompatActivity() {
                     txCodeSample.visibility = View.INVISIBLE
                     txCode.visibility = View.INVISIBLE
                 }
+                if (questsAndAns[qCount].get("comments") != null)
+                    if (questsAndAns[qCount].get("comments")?.length!! > 5) {
+                        var commentsReceived = questsAndAns[qCount].get("comments")!!.split("~~~")
+                        for (i in 0 until commentsReceived.size) {
+                            var cSplit =
+                                commentsReceived[i].split("|||")
+                            listComments.add(Comment(cSplit.get(1), cSplit.get(0), cSplit.get(2)))
+                        }
+
+                        rvCommentsAdapter.notifyDataSetChanged()
+                        recyclerViewComments.visibility = View.VISIBLE
+                        txCommentSample.visibility = View.VISIBLE
+                    } else {
+                        txCommentSample.visibility = View.INVISIBLE
+                        recyclerViewComments.visibility = View.INVISIBLE
+                    }
             } else {
                 fabPrevQ.isEnabled = false
                 makeToast("Showing 1st Q!")
