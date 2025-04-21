@@ -91,12 +91,6 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
                 }
             }
 
-            R.id.action_save_offline-> {
-                if (arrayListOfflineQs.isEmpty()) {
-                    makeToast("Saving...")
-                    saveOffline(questsAndAns)
-                } else makeToast("Already Dld - " + arrayListOfflineQs.size)
-            }
 
         }
         return super.onOptionsItemSelected(item)
@@ -170,7 +164,7 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
                 db.collection("questions").get().addOnSuccessListener { result ->
 
                     for (document in result) {
-                        for (item in 0 until document.data.size - 1) {
+                        for (item in 0 until document.data.size) {
                             var values =
                                 (document.data.getValue((item + 1).toString()) as Map<String, *>)
 

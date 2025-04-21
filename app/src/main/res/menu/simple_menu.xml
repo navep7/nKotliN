@@ -8,11 +8,4 @@
         app:showAsAction="ifRoom"
         tools:ignore="HardcodedText" />
 
-    <item
-        android:id="@+id/action_save_offline"
-        android:icon="@android:drawable/ic_menu_save"
-        android:title="save"
-        app:showAsAction="ifRoom"
-        tools:ignore="HardcodedText" />
-
 </menu>
