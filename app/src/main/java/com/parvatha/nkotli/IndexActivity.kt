@@ -87,9 +87,11 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
         when (item.itemId) {
             R.id.action_dark_mode-> {
                 if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+                    MainActivity.prodFlag = true
                     sharedPrefs.edit().putBoolean("DM", false).apply()
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 } else {
+                    MainActivity.prodFlag = false
                     sharedPrefs.edit().putBoolean("DM", true).apply()
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 }

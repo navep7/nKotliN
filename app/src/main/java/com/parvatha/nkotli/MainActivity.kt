@@ -516,7 +516,7 @@ class MainActivity : AppCompatActivity() {
 
         lateinit var mActivity: Activity
         private var mInterstitialAd: InterstitialAd? = null
-        private val prodFlag: Boolean = true
+        var prodFlag: Boolean = true
         val questsAndAns = ArrayList<HashMap<String, String>>()
     }
 
