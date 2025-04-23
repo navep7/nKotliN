@@ -2,10 +2,12 @@ package com.parvatha.nkotli
 
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.text.Html
@@ -18,24 +20,48 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.ads.nativetemplates.NativeTemplateStyle
+import com.google.android.ads.nativetemplates.TemplateView
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.initialization.InitializationStatus
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.mediation.MediationBannerAd
+import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.parvatha.nkotli.IndexActivity.Companion.appContext
 import com.parvatha.nkotli.IndexActivity.Companion.db
 import com.parvatha.nkotli.IndexActivity.Companion.makeToast
 import com.parvatha.nkotli.databinding.ActivityMainBinding
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
+
+
+
+    private lateinit var bannerAdView: AdView
+
+    private var adLoaded: Boolean = false
+    private lateinit var template: TemplateView
+    private lateinit var adLoader: AdLoader
 
 
     private lateinit var recyclerViewComments: RecyclerView
@@ -79,6 +105,44 @@ class MainActivity : AppCompatActivity() {
         OnClickListeners()
         rvInit()
 
+        Thread {
+            // Initialize the Google Mobile Ads SDK on a background thread.
+            MobileAds.initialize(
+                this,
+                OnInitializationCompleteListener { initializationStatus: InitializationStatus? -> })
+        }
+            .start()
+
+
+        showInterstitialAd()
+
+        adLoader = com.google.android.gms.ads.AdLoader.Builder(
+            this,
+            resources.getString(R.string.admob_native_adunit_id)
+        )
+            .forNativeAd(object : NativeAd.OnNativeAdLoadedListener {
+                override fun onNativeAdLoaded(nativeAd: com.google.android.gms.ads.nativead.NativeAd) {
+                    val background = ColorDrawable()
+                    val styles =
+                        NativeTemplateStyle.Builder().withMainBackgroundColor(background).build()
+
+                    template.setVisibility(View.VISIBLE)
+                    template.setStyles(styles)
+                    template.setNativeAd(nativeAd)
+                    adLoaded = true
+                    // Showing a simple Toast message to user when Native an ad is Loaded and ready to show
+                    // Toast.makeText(MainActivity.this, "Native Ad is loaded, now you can show the native ad", Toast.LENGTH_LONG).show();
+                }
+            }).build()
+
+
+
+      //  loadFSAD()
+        loadNativeAd()
+        showNativeAd()
+        showBannerAd()
+
+
         if (questsAndAns.size >= dataIndex) {
             txToolBar.text =
                 (Html.fromHtml(questsAndAns[dataIndex].get("question"))).toString()
@@ -119,10 +183,61 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        IndexActivity.db = Firebase.firestore
+        db = Firebase.firestore
 
         setSupportActionBar(binding.toolbar)
     }
+
+
+    private fun showBannerAd() {
+        if (prodFlag) {
+            bannerAdView = findViewById(R.id.banner_adview)
+            val adRequest = AdRequest.Builder().build()
+            bannerAdView.loadAd(adRequest)
+            bannerAdView.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showNativeAd() {
+        template = findViewById(R.id.nativeTemplateView)
+        if (prodFlag)
+            if (adLoaded) {
+                template.visibility = View.VISIBLE
+                // Showing a simple Toast message to user when an Native ad is shown to the user
+                // Toast.makeText(this@MainActivity, "Native Ad  is loaded and Now showing ad  ", Toast.LENGTH_LONG).show()
+            } else {
+                //Load the Native ad if it is not loaded
+                loadNativeAd()
+
+                // Showing a simple Toast message to user when Native ad is not loaded
+               //    Toast.makeText(this@MainActivity, "Native Ad is not Loaded ", Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun loadNativeAd() {
+        // Creating  an Ad Request
+        val adRequest: AdRequest = AdRequest.Builder().build()
+
+        adLoader = AdLoader.Builder(this, resources.getString(R.string.admob_native_adunit_id))
+            .forNativeAd { nativeAd ->
+                var background: ColorDrawable = ColorDrawable()
+                val styles =
+                    NativeTemplateStyle.Builder().withMainBackgroundColor(background).build()
+
+                template.visibility = View.VISIBLE
+                template.setStyles(styles)
+                template.setNativeAd(nativeAd)
+                adLoaded = true
+                // Showing a simple Toast message to user when Native an ad is Loaded and ready to show
+                //    Toast.makeText(this@MainActivity, "Native Ad is loaded, now you can show the native ad", Toast.LENGTH_LONG).show()
+            }.build()
+        // load Native Ad with the Request
+        adLoader.loadAd(adRequest)
+
+        // Showing a simple Toast message to user when Native an ad is Loading
+        //   Toast.makeText(this@MainActivity, "Native Ad is loading ", Toast.LENGTH_LONG).show()
+    }
+
 
     private fun rvInit() {
 
@@ -367,6 +482,41 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object {
+        fun showInterstitialAd() {
+            if (prodFlag){
+
+                val adRequest = AdRequest.Builder().build()
+
+                InterstitialAd.load(
+                    appContext, appContext.resources.getString(R.string.admob_intr_adunit_id), adRequest,
+                    object : InterstitialAdLoadCallback() {
+                        override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                            // The mInterstitialAd reference will be null until
+                            // an ad is loaded.
+                            mInterstitialAd = interstitialAd
+                        //    makeToast("onAdLoaded")
+                        }
+
+                        override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                            // Handle the error
+                        //    makeToast("onAdFailedToLoad - " + loadAdError.toString())
+                            mInterstitialAd = null
+                        }
+                    })
+
+                //   if (Random.nextInt() % 2 == 0)
+                if (mInterstitialAd != null) {
+                    mInterstitialAd?.show(mActivity)
+                } else {
+                 //   makeToast("The interstitial ad wasn't ready yet.")
+                }
+
+            }
+        }
+
+        lateinit var mActivity: Activity
+        private var mInterstitialAd: InterstitialAd? = null
+        private val prodFlag: Boolean = true
         val questsAndAns = ArrayList<HashMap<String, String>>()
     }
 

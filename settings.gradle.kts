@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "nKotli"
 include(":app")
- 
+include(":nativetemplates")

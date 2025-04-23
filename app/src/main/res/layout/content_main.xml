@@ -2,11 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rl_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/banner_adview"
+        ads:adUnitId="@string/admob_banner_adunit_id"
+        ads:adSize="BANNER"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_next"
@@ -47,8 +55,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/fab_next"
-        android:layout_alignParentTop="true"
+        android:layout_above="@+id/nativeTemplateView"
+        android:layout_below="@+id/banner_adview"
         android:layout_margin="@dimen/fab_margin">
 
 
@@ -109,6 +117,15 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <com.google.android.ads.nativetemplates.TemplateView
+        android:layout_above="@+id/fab_next"
+        android:visibility="invisible"
+        android:id= "@+id/nativeTemplateView"
+        app:gnt_template_type= "@layout/gnt_small_template_view"
+        android:layout_width= "match_parent"
+        android:layout_height= "wrap_content" />
+
 
 
 </RelativeLayout>

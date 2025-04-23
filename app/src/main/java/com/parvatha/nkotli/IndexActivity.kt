@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -47,6 +48,8 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
+
+        MainActivity.mActivity = this
         appContext = applicationContext
         sharedPrefs = this.getSharedPreferences(
             "com.parvatha.nkotli", MODE_PRIVATE
@@ -58,6 +61,7 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
 
         findViewByIds()
 
+        FirebaseApp.initializeApp(applicationContext)
         db = Firebase.firestore
         ReadData()
 
@@ -213,6 +217,8 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
     }
 
     override fun onItemClick(view: View?, position: Int) {
+
+        MainActivity.showInterstitialAd()
         startActivity(
             Intent(appContext, MainActivity::class.java).putExtra(
                 "topic", position.toString()
