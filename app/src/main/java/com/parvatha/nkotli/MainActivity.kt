@@ -189,6 +189,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("VisibleForTests")
     private fun showBannerAd() {
         if (prodFlag) {
             bannerAdView = findViewById(R.id.banner_adview)
@@ -204,13 +205,13 @@ class MainActivity : AppCompatActivity() {
             if (adLoaded) {
                 template.visibility = View.VISIBLE
                 // Showing a simple Toast message to user when an Native ad is shown to the user
-                // Toast.makeText(this@MainActivity, "Native Ad  is loaded and Now showing ad  ", Toast.LENGTH_LONG).show()
+              //   Toast.makeText(this@MainActivity, "Native Ad  is loaded and Now showing ad  ", Toast.LENGTH_LONG).show()
             } else {
                 //Load the Native ad if it is not loaded
                 loadNativeAd()
 
                 // Showing a simple Toast message to user when Native ad is not loaded
-               //    Toast.makeText(this@MainActivity, "Native Ad is not Loaded ", Toast.LENGTH_LONG).show()
+                //   Toast.makeText(this@MainActivity, "Native Ad is not Loaded ", Toast.LENGTH_LONG).show()
             }
     }
 
@@ -494,12 +495,12 @@ class MainActivity : AppCompatActivity() {
                             // The mInterstitialAd reference will be null until
                             // an ad is loaded.
                             mInterstitialAd = interstitialAd
-                        //    makeToast("onAdLoaded")
+                      //      makeToast("onAdLoaded")
                         }
 
                         override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                             // Handle the error
-                        //    makeToast("onAdFailedToLoad - " + loadAdError.toString())
+                     //       makeToast("onAdFailedToLoad - " + loadAdError.toString())
                             mInterstitialAd = null
                         }
                     })

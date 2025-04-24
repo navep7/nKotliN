@@ -87,11 +87,9 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
         when (item.itemId) {
             R.id.action_dark_mode-> {
                 if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-                    MainActivity.prodFlag = true
                     sharedPrefs.edit().putBoolean("DM", false).apply()
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 } else {
-                    MainActivity.prodFlag = false
                     sharedPrefs.edit().putBoolean("DM", true).apply()
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 }
@@ -102,18 +100,13 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun saveOffline(questsAndAns: java.util.ArrayList<HashMap<String, String>>) {
-
-        makeToast("yet2Impl")
-
-    }
-
     private fun OnClickListeners() {
 
         textViewX.setOnClickListener({
             editTextSeach.setText("")
             ReadData()
         })
+
 
         fabInfo.setOnClickListener({
             Snackbar.make(
