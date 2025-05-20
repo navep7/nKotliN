@@ -15,7 +15,6 @@ firebaseFirestoreKtx = "25.1.3"
 firebaseFirestore = "25.1.3"
 playServicesAuthBase = "18.1.0"
 playServicesAdsApi = "24.2.0"
-playServicesAdsLite = "20.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,7 +31,6 @@ firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-fires
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 play-services-auth-base = { group = "com.google.android.gms", name = "play-services-auth-base", version.ref = "playServicesAuthBase" }
 play-services-ads-api = { group = "com.google.android.gms", name = "play-services-ads-api", version.ref = "playServicesAdsApi" }
-play-services-ads-lite = { group = "com.google.android.gms", name = "play-services-ads-lite", version.ref = "playServicesAdsLite" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

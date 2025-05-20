@@ -76,6 +76,14 @@
                 android:textSize="21sp"
                 android:textStyle="italic" />
 
+            <WebView
+                android:id="@+id/vid_view"
+                android:visibility="invisible"
+                android:background="@android:color/transparent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:ignore="WebViewLayout" />
+
             <TextView
                 android:id="@+id/tx_codesample"
                 android:visibility="invisible"

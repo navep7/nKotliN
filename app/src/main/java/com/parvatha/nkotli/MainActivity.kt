@@ -15,12 +15,13 @@ import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,7 +37,6 @@ import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.gms.ads.mediation.MediationBannerAd
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.common.AccountPicker
@@ -50,13 +50,12 @@ import com.parvatha.nkotli.databinding.ActivityMainBinding
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
 
 
-
+    private lateinit var urlVid: String
     private lateinit var bannerAdView: AdView
 
     private var adLoaded: Boolean = false
@@ -80,6 +79,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fabRead: FloatingActionButton
 
     //   private lateinit var txQuestion: TextView
+    private lateinit var vView: WebView
     private lateinit var txAnswer: TextView
     private lateinit var txCode: TextView
     private lateinit var txCodeSample: TextView
@@ -100,6 +100,7 @@ class MainActivity : AppCompatActivity() {
 
         txToolBar = findViewById(binding.txToolbar.id)
         buttonPost = findViewById(binding.actionImgbtnEdit.id)
+
         initStuff()
         findViewByIds()
         OnClickListeners()
@@ -148,6 +149,7 @@ class MainActivity : AppCompatActivity() {
                 (Html.fromHtml(questsAndAns[dataIndex].get("question"))).toString()
 //            txQuestion.text = Html.fromHtml(questsAndAns[dataIndex].get("question"))
             txAnswer.text = Html.fromHtml(questsAndAns[dataIndex].get("answer"))
+            urlVid = questsAndAns[dataIndex].get("vidurl").toString()
             if (questsAndAns[dataIndex].get("code")?.length!! > 5) {
                 txCode.visibility = View.VISIBLE
                 txCodeSample.visibility = View.VISIBLE
@@ -172,6 +174,30 @@ class MainActivity : AppCompatActivity() {
                     txCommentSample.visibility = View.INVISIBLE
                     recyclerViewComments.visibility = View.INVISIBLE
                 }
+
+            if (!urlVid.equals("null")) {
+                makeToast(urlVid + " - uVid")
+                vView.visibility = View.VISIBLE
+
+                val frameVideo =
+                    "<html><body><br><iframe width=\"320\" height=\"200\" src=\"" +  //      "https://www.youtube.com/embed/XDYbEuY8nIc\"" +
+                            urlVid +
+                            " frameborder=\"0\" allowfullscreen></iframe></body></html>"
+
+                val displayYoutubeVideo = findViewById<View>(R.id.vid_view) as WebView
+                displayYoutubeVideo.webViewClient = object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                        return false
+                    }
+                }
+                val webSettings = displayYoutubeVideo.settings
+                webSettings.javaScriptEnabled = true
+                displayYoutubeVideo.loadData(frameVideo, "text/html", "utf-8")
+
+                vView.visibility = View.VISIBLE
+            } else {
+                vView.visibility = View.GONE
+            }
         }
 
         textToSpeech = TextToSpeech(this) { status ->
@@ -469,6 +495,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun findViewByIds() {
+        vView = findViewById(R.id.vid_view)
         txCodeSample = findViewById(R.id.tx_codesample)
         txCommentSample = findViewById(R.id.tx_commentsample)
         fabNextQ = findViewById(R.id.fab_next)

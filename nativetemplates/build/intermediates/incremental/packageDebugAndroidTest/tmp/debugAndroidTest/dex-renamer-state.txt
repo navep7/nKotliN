@@ -1,0 +1,4 @@
+#Sun May 11 09:34:39 IST 2025
+base.0=/Users/np/ASPs/nKotli/nativetemplates/build/intermediates/dex/debugAndroidTest/mergeDexDebugAndroidTest/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

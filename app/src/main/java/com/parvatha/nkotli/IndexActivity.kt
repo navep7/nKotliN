@@ -111,7 +111,7 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
         fabInfo.setOnClickListener({
             Snackbar.make(
                 window.decorView,
-                "Contact, for contributing.. - \n +918884846307 / xxx_xx@gmail.com",
+                "Contact, for contributing.. - \n +918884846307 / i.naveen.prakash@gmail.com",
                 Snackbar.LENGTH_LONG
             ).show()
         })
@@ -167,6 +167,8 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
                             var values =
                                 (document.data.getValue((item + 1).toString()) as Map<String, *>)
 
+                            if (values["VID"]?.equals("null") == true)
+                            makeToast("VU - " + values["VID"])
                             if (!arrayListIndex.contains(values["Q"].toString()) || readAgain) {
                                 readAgain = false
                                 arrayListIndex.add(values["Q"].toString())
@@ -177,6 +179,7 @@ class IndexActivity : AppCompatActivity(), RvIndexAdapter.ItemClickListener {
                                         "answer" to values["A"].toString(),
                                         "code" to values["C"].toString(),
                                         "comments" to values["CC"].toString(),
+                                        "vidurl" to values["VID"].toString(),
                                     )
                                 )
                             }
