@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
             if (!urlVid.equals("null")) {
-                makeToast(urlVid + " - uVid")
+
                 vView.visibility = View.VISIBLE
 
                 val frameVideo =

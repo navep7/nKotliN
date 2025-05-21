@@ -1,6 +1,7 @@
 package com.parvatha.nkotli
 
 import android.content.Context
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,7 @@ class RvCommentsAdapter internal constructor(
     // binds the data to the TextView in each row
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val comment: Comment = mComments[position]
-        holder.txComment.text = comment.strComment
+        holder.txComment.text = Html.fromHtml(comment.strComment)
         holder.txTime.text = comment.strCommentTime
         holder.txUser.text = comment.strCommentUser
     }
